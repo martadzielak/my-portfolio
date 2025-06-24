@@ -1,10 +1,26 @@
+'use client'
 import Image from "next/image";
+import { motion } from 'framer-motion'
 import styles from "./page.module.css";
+import { useEffect } from "react";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 
 export default function Home() {
+  useEffect(() => {
+    AOS.init({ once: true })
+  }, [])
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h2>Animated Heading</h2>
+      </motion.div>
+      <main className={styles.main} data-aos="fade-up">
         <Image
           className={styles.logo}
           src="/next.svg"
@@ -46,7 +62,7 @@ export default function Home() {
           </a>
         </div>
       </main>
-      <footer className={styles.footer}>
+      <footer className={styles.footer} data-aos="zoom-in">
         <a
           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
           target="_blank"
