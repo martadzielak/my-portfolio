@@ -12,7 +12,6 @@
 .sectionsMain {
   display: flex;
   flex-direction: column;
-
 }
 
 .section {
@@ -48,8 +47,6 @@
 .page {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-items: center;
   min-height: 100svh;
   padding: 80px;
 }
@@ -91,6 +88,14 @@
   .page {
     padding: 32px;
     padding-bottom: 80px;
+  }
+
+  .page::after {
+    width: 32px;
+  }
+
+  .page::before {
+    left: 27px;
   }
 
   .main {
