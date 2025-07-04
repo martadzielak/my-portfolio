@@ -205,10 +205,10 @@ a.secondary {
 
 .section {
   min-height: 100vh;
-  width: 100vw;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   padding: 0 2rem;
   box-sizing: border-box;
@@ -216,10 +216,11 @@ a.secondary {
 }
 
 .sectionHeading {
+  width: 100%;
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  text-align: center;
+  text-align: left;
 }
 
 .sectionText {
@@ -227,7 +228,7 @@ a.secondary {
   color: #444;
   line-height: 1.7;
   max-width: 600px;
-  text-align: center;
+  text-align: left;
 }
 
 .sectionsMain {
