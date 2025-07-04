@@ -46,11 +46,6 @@
   padding: 80px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
-}
 
 .main {
   display: flex;
@@ -59,26 +54,6 @@
   grid-row-start: 2;
 }
 
-.ctas {
-  display: flex;
-  gap: 16px;
-  flex-direction: row;
-}
-
-.ctas a {
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  border: 1px solid transparent;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
-}
 
 
 @media (max-width: 600px) {
