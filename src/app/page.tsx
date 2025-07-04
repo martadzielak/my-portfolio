@@ -17,7 +17,7 @@ export default function Home() {
   }, [])
   return (
     <div className={styles.page}>
-
+      <h1 className={styles.mainHeading}>Marta Dziełak</h1>
       <main className={styles.sectionsMain}>
         <Section1 />
         <Section2 />

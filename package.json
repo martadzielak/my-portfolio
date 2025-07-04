@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.2.0",
     "aos": "^2.3.4",
     "framer-motion": "^12.19.1",
     "next": "15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-scroll-parallax": "^3.4.5"
+    "react-scroll-parallax": "^3.4.5",
+    "three": "^0.178.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -22,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.178.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "typescript": "^5"
