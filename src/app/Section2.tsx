@@ -31,9 +31,9 @@ export default function Section2() {
     }, []);
     return (
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
-            <h2 className={styles.sectionHeading}>Section 2</h2>
+            <h2 className={styles.sectionHeading}>2019 - Praca.pl</h2>
             <p ref={pRef} className={styles.sectionText}>
-                Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas.
+                My first professional experience as a software engineer was at Praca.pl, where I worked on implementing Wordpress webpages with job offers. I have been preparing them independently from the beginning to production! Also, my work included implementing improvements for SEO.
             </p>
         </div>
     );

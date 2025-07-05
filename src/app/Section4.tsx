@@ -31,9 +31,9 @@ export default function Section4() {
     }, []);
     return (
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
-            <h2 className={styles.sectionHeading}>Section 4</h2>
+            <h2 className={styles.sectionHeading}>StepStone 2020-2022</h2>
             <p ref={pRef} className={styles.sectionText}>
-                Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas.
+                At StepStone I had a chance to learn modern frontend technologies and diligent work organization. First, my team was responsible for implementing a new project - a CV Generator. After we finished it, we also worked on an innovative method of sending an application - without a CV!
             </p>
         </div>
     );

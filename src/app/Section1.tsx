@@ -31,9 +31,9 @@ export default function Section1() {
     }, []);
     return (
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
-            <h2 className={styles.sectionHeading}>Section 1</h2>
+            <h2 className={styles.sectionHeading}>Hi!</h2>
             <p ref={pRef} className={styles.sectionText}>
-                Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas.
+                My name is Marta, and I am a software engineer with a passion for creating innovative solutions. Let me show you my proffessional journey and the projects I have worked on.
             </p>
         </div>
     );
