@@ -19,7 +19,7 @@ export default function Home() {
     <div className={styles.page}>
       <h1 className={styles.mainHeading}>Marta Dziełak</h1>
       <main className={styles.sectionsMain}>
-        <Section1 />
+        <Section1 data-aos="fade-left" data-aos-anchor-placement="top-top" data-aos-duration="1000" />
         <Section2 />
         <Section3 />
         <Section4 />

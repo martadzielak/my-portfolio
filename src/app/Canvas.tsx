@@ -8,46 +8,75 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     const group = useRef<THREE.Group>(null);
     const { scene } = useGLTF('/cow.glb');
     // Animation state
-    const direction = useRef({ x1: 0, y1: 0, x2: 0, y2: 0 });
+    const direction = useRef({
+        centerX: 0,
+        centerY: 0,
+        radius: 20,
+        startAngle: 0,
+        endAngle: 0,
+        clockwise: true,
+    });
     const progressRef = useRef(0);
-    const duration = 8; // seconds for one full diagonal cross
-    // Pick two points on opposite sides for a diagonal
-    function pickDiagonalPoints() {
-        const r = 12; // radius just outside the view
-        const angle1 = Math.random() * Math.PI * 2;
-        const angle2 = angle1 + Math.PI + (Math.random() - 0.5) * Math.PI * 0.3; // mostly opposite
-        return {
-            x1: Math.cos(angle1) * r,
-            y1: Math.sin(angle1) * r,
-            x2: Math.cos(angle2) * r,
-            y2: Math.sin(angle2) * r,
-        };
+    const duration = 16; // seconds for one full cross
+    // Pick a circle arc for the cow to follow
+    function pickCircleArc() {
+        // Two types: bottom-left to top-right (clockwise), top-left to bottom-right (counterclockwise)
+        const clockwise = Math.random() < 0.5;
+        const r = 20;
+        let startAngle, endAngle, centerX, centerY;
+        if (clockwise) {
+            // Bottom-left to top-right
+            centerX = 0;
+            centerY = 0;
+            startAngle = Math.PI * 1.25; // 225deg (bottom-left)
+            endAngle = Math.PI * 0.25;   // 45deg (top-right)
+        } else {
+            // Top-left to bottom-right
+            centerX = 0;
+            centerY = 0;
+            startAngle = Math.PI * 0.75; // 135deg (top-left)
+            endAngle = Math.PI * 1.75;   // 315deg (bottom-right)
+        }
+        return { centerX, centerY, radius: r, startAngle, endAngle, clockwise };
     }
     // Initialize direction
     useEffect(() => {
-        direction.current = pickDiagonalPoints();
+        direction.current = pickCircleArc();
         progressRef.current = 0;
     }, []);
+    useEffect(() => {
+        scene.traverse((child: THREE.Object3D) => {
+            if ((child as THREE.Mesh).isMesh) {
+                (child as THREE.Mesh).material = new THREE.MeshPhysicalMaterial({
+                    color: 0xaaaaaa,
+                    roughness: 0.9,
+                    metalness: 1.0,
+                    clearcoat: 0.9,
+                    clearcoatRoughness: 0.03,
+                    transmission: 0.0,
+                    ior: 2.2,
+                    thickness: 1,
+                });
+            }
+        });
+    }, [scene]);
     useFrame((state, delta) => {
         if (group.current) {
             progressRef.current += delta / duration;
             if (progressRef.current >= 1) {
-                // Pick new diagonal
-                const prev = direction.current;
-                direction.current = pickDiagonalPoints();
-                // Start new movement from where the last ended
-                direction.current.x1 = prev.x2;
-                direction.current.y1 = prev.y2;
+                // Pick new arc
+                direction.current = pickCircleArc();
                 progressRef.current = 0;
             }
-            // Smooth progress
+            // Interpolate angle
             const p = Math.min(Math.max(progressRef.current, 0), 1);
-            // Ease in/out
-            const smooth = p < 0.15 ? 0 : p > 0.85 ? 1 : (p - 0.15) / 0.7;
-            group.current.position.x = direction.current.x1 + (direction.current.x2 - direction.current.x1) * smooth;
-            group.current.position.y = direction.current.y1 + (direction.current.y2 - direction.current.y1) * smooth;
+            const angle = direction.current.startAngle + (direction.current.endAngle - direction.current.startAngle) * p;
+            const x = direction.current.centerX + Math.cos(angle) * direction.current.radius;
+            const y = direction.current.centerY + Math.sin(angle) * direction.current.radius;
+            group.current.position.x = x;
+            group.current.position.y = y;
             // Graceful rotation
-            group.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.3 + (direction.current.x2 - direction.current.x1) * 0.02 * smooth;
+            group.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.3 + angle * 0.2;
             group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1;
         }
     });
@@ -78,4 +107,3 @@ export default function CowCanvas() {
     );
 }
 
-// If using next.config.js, ensure /public/thonker.glb exists
