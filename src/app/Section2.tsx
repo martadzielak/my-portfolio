@@ -12,8 +12,8 @@ export default function Section2() {
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: ref.current,
-                start: 'top 80%',
-                end: 'bottom 40%',
+                start: 'top 90%',
+                end: 'bottom 80%',
                 scrub: true,
             }
         });
