@@ -1,21 +1,61 @@
 "use client";
 import { Canvas, useFrame } from '@react-three/fiber';
-import { JSX, Suspense, useEffect, useRef } from 'react';
-import { useGLTF } from '@react-three/drei';
+import { JSX, Suspense, useEffect, useRef, useState } from 'react';
+import { TextureLoader } from 'three';
 import * as THREE from 'three';
+import { OBJLoader } from 'three-stdlib';
 
 function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) {
     const group = useRef<THREE.Group>(null);
-    const { scene } = useGLTF('/cow.glb');
+    const [cowObj, setCowObj] = useState<THREE.Group | null>(null);
+    // Load textures (ensure they are loaded before applying to material)
+    const [texturesLoaded, setTexturesLoaded] = useState(false);
+    const [loadedDiffuse, setLoadedDiffuse] = useState<THREE.Texture | null>(null);
+    const [loadedNormal, setLoadedNormal] = useState<THREE.Texture | null>(null);
+    const [loadedRoughness, setLoadedRoughness] = useState<THREE.Texture | null>(null);
+
+    useEffect(() => {
+        const loader = new TextureLoader();
+        let loaded = 0;
+        loader.load('/Cow_Quad_Diffuse.png', (tex: THREE.Texture) => { setLoadedDiffuse(tex); loaded++; if (loaded === 3) setTexturesLoaded(true); });
+        loader.load('/Cow_Quad_Normal.png', (tex: THREE.Texture) => { setLoadedNormal(tex); loaded++; if (loaded === 3) setTexturesLoaded(true); });
+        loader.load('/Cow_Quad_Roughness.png', (tex: THREE.Texture) => { setLoadedRoughness(tex); loaded++; if (loaded === 3) setTexturesLoaded(true); });
+    }, []);
+
+    useEffect(() => {
+        const loader = new OBJLoader();
+        loader.load('/cow.obj', (obj: THREE.Group) => {
+            setCowObj(obj);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!texturesLoaded || !cowObj) return;
+        cowObj.traverse((child: THREE.Object3D) => {
+            if ((child as THREE.Mesh).isMesh) {
+                const mesh = child as THREE.Mesh;
+                mesh.material = new THREE.MeshStandardMaterial({
+                    map: loadedDiffuse ?? undefined,
+                    normalMap: loadedNormal ?? undefined,
+                    roughnessMap: loadedRoughness ?? undefined,
+                    color: 0xffffff,
+                    roughness: 1.0,
+                    metalness: 0.0,
+                });
+                mesh.material.needsUpdate = true;
+            }
+        });
+    }, [cowObj, texturesLoaded, loadedDiffuse, loadedNormal, loadedRoughness]);
     // Animation state
     const direction = useRef({ x1: 0, y1: 0, x2: 0, y2: 0 });
     const progressRef = useRef(0);
     const duration = 16; // seconds for one full move
-    // Pick two random points outside the view for a gentle, random float
+    // Pick two random points within the visible area (always on screen)
+    // For camera z=3, x/y in [-1.5, 1.5] is always visible
     function pickRandomPoints() {
-        const r = 20;
+        const r = 1.3; // stay well within the view
         const angle1 = Math.random() * Math.PI * 2;
-        const angle2 = angle1 + Math.PI + (Math.random() - 0.5) * Math.PI * 1.2;
+        const angle2 = angle1 + Math.PI + (Math.random() - 0.5) * Math.PI * 0.7;
         return {
             x1: Math.cos(angle1) * r,
             y1: Math.sin(angle1) * r,
@@ -28,25 +68,6 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
         direction.current = pickRandomPoints();
         progressRef.current = 0;
     }, []);
-    useEffect(() => {
-        scene.traverse((child: THREE.Object3D) => {
-            if ((child as THREE.Mesh).isMesh) {
-                (child as THREE.Mesh).material = new THREE.MeshPhysicalMaterial({
-                    color: 0xffffff, // bright white for visibility
-                    roughness: 0.3, // glossier
-                    metalness: 0.8, // still metallic
-                    clearcoat: 0.7,
-                    clearcoatRoughness: 0.05,
-                    transmission: 0.0,
-                    ior: 1.5,
-                    thickness: 1,
-                    envMapIntensity: 2,
-                    opacity: 1.0,
-                    transparent: false,
-                });
-            }
-        });
-    }, [scene]);
     useFrame((state, delta) => {
         if (group.current) {
             progressRef.current += delta / duration;
@@ -69,9 +90,11 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             // Gentle floating rotation
             group.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.3;
             group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1;
+            // Set cow scale to 0.8 (20% smaller)
+            group.current.scale.set(0.8, 0.8, 0.8);
         }
     });
-    return <primitive ref={group} {...props} object={scene} />;
+    return cowObj ? <primitive ref={group} {...props} object={cowObj} /> : null;
 
 
 
@@ -87,9 +110,10 @@ export default function CowCanvas() {
             width: '100vw',
             height: '100vh',
         }}>
-            <Canvas camera={{ position: [0, 0, 3] }}>
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[2, 2, 2]} intensity={0.7} />
+            <Canvas camera={{ position: [0, 0, 3] }} shadows>
+                <ambientLight intensity={2.5} color={0xffffff} />
+                <directionalLight position={[2, 2, 2]} intensity={3.5} color={0xffffff} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-bias={-0.0001} />
+                <directionalLight position={[-2, 2, 2]} intensity={1.5} color={0xffffff} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-bias={-0.0001} />
                 <Suspense fallback={null}>
                     <FloatingCow />
                 </Suspense>
