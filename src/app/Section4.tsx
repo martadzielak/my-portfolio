@@ -17,7 +17,7 @@ export default function Section4() {
                 scrub: true,
             }
         });
-        tl.fromTo(ref.current, { opacity: 0, y: 120, scale: 1.2 }, { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'expo.out' }, 0);
+        tl.fromTo(ref.current, { opacity: 0, x: 200, rotate: 10 }, { opacity: 1, x: 0, rotate: 0, duration: 1.1, ease: 'power2.out' }, 0);
         tl.fromTo(
             pRef.current,
             { opacity: 0 },
@@ -33,7 +33,7 @@ export default function Section4() {
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
             <h2 className={styles.sectionHeading}>Section 4</h2>
             <p ref={pRef} className={styles.sectionText}>
-                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?
+                Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas.
             </p>
         </div>
     );

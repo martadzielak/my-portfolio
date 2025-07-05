@@ -12,12 +12,13 @@ export default function Section1() {
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: ref.current,
-                start: 'top 80%',
-                end: 'bottom 40%',
+                start: 'top 40%',
+                end: 'top 60%',
                 scrub: true,
+                markers: true, // Enable markers for debugging
             }
         });
-        tl.fromTo(ref.current, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.7)' }, 0);
+        tl.fromTo(ref.current, { opacity: 0, x: 200, rotate: 10 }, { opacity: 1, x: 0, rotate: 0, duration: 1.1, ease: 'power2.out' }, 0);
         tl.fromTo(
             pRef.current,
             { opacity: 0 },
@@ -33,7 +34,7 @@ export default function Section1() {
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
             <h2 className={styles.sectionHeading}>Section 1</h2>
             <p ref={pRef} className={styles.sectionText}>
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+                Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas.
             </p>
         </div>
     );
