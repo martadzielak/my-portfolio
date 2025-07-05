@@ -10,8 +10,8 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     // State for direction
     const direction = useRef<{ x1: number, y1: number, x2: number, y2: number }>({ x1: 0, y1: 0, x2: 0, y2: 0 });
     const progressRef = useRef(0);
-    // Cow moves slower, appears on screen 1.5x more often
-    const duration = 24; // seconds for one full move (was 16, now slower)
+    // Cow appears on screen every 8 seconds
+    const duration = 8; // seconds for one full move
     // Reduce the off-screen radius so the cow crosses the screen more often
     function pickRandomPoints() {
         const r = 16; // was 24, now 1.5x closer to center
@@ -29,6 +29,28 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
         direction.current = pickRandomPoints();
         progressRef.current = 0;
     }, []);
+
+    useEffect(() => {
+        scene.traverse((child: THREE.Object3D) => {
+            if ((child as THREE.Mesh).isMesh) {
+                (child as THREE.Mesh).material = new THREE.MeshPhysicalMaterial({
+                    thickness: 6, // slightly thicker for more refraction
+                    roughness: 0.08, // still glossy, but a bit more visible
+                    clearcoat: 1,
+                    clearcoatRoughness: 0.01,
+                    transmission: 0.7, // less transparent for more color
+                    ior: 1.5,
+                    envMapIntensity: 40, // boost reflections
+                    color: 0xff69b4, // hot pink
+                    attenuationDistance: 0.1, // add some depth
+                    opacity: 0.7, // more visible
+                    transparent: true,
+                    metalness: 0.4, // more shine
+                    specularIntensity: 1,
+                });
+            }
+        });
+    }, [scene]);
 
     useFrame((state, delta) => {
         if (group.current && direction.current) {
@@ -67,8 +89,11 @@ export default function CowCanvas() {
             height: '100vh',
         }}>
             <Canvas camera={{ position: [0, 0, 3] }}>
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[2, 2, 2]} intensity={0.7} />
+                <color attach="background" args={["#0a1026"]} />
+                <ambientLight intensity={1.5} />
+                <directionalLight position={[2, 2, 2]} intensity={2.5} castShadow />
+                <directionalLight position={[-2, 2, 2]} intensity={1.5} />
+                <pointLight position={[0, 5, 5]} intensity={2.5} distance={10} decay={2} color={0xff69b4} />
                 <Suspense fallback={null}>
                     <FloatingCow />
                 </Suspense>
