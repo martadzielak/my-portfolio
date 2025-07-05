@@ -35,6 +35,9 @@ export default function Section2() {
             <p ref={pRef} className={styles.sectionText}>
                 My first professional experience as a software engineer was at Praca.pl, where I worked on implementing Wordpress webpages with job offers. I have been preparing them independently from the beginning to production! Also, my work included implementing improvements for SEO.
             </p>
+            <video className={styles.video} autoPlay muted loop>
+                <source src="/Pracapl-movie.mp4" type="video/mp4" />
+            </video>
         </div>
     );
 }

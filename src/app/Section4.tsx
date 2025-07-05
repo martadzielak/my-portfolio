@@ -35,6 +35,9 @@ export default function Section4() {
             <p ref={pRef} className={styles.sectionText}>
                 At StepStone I had a chance to learn modern frontend technologies and diligent work organization. First, my team was responsible for implementing a new project - a CV Generator. After we finished it, we also worked on an innovative method of sending an application - without a CV!
             </p>
+            <video className={styles.video} autoPlay muted loop>
+                <source src="/StepStone-movie.mp4" type="video/mp4" />
+            </video>
         </div>
     );
 }
