@@ -1,8 +1,5 @@
 'use client'
 import styles from "./page.module.css";
-import { useEffect } from "react";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import Section1 from './Section1'
 import Section2 from './Section2'
 import Section3 from './Section3'
@@ -12,9 +9,7 @@ import Section6 from './Section6'
 
 
 export default function Home() {
-  useEffect(() => {
-    AOS.init({ once: true })
-  }, [])
+
   return (
     <div className={styles.page}>
       <h1 className={styles.mainHeading}>Marta Dziełak</h1>

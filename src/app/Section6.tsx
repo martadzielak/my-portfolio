@@ -31,7 +31,7 @@ export default function Section6() {
     }, []);
     return (
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
-            <h2 className={styles.sectionHeading}>What is next</h2>
+            <h2 className={styles.sectionHeading}>What is next?</h2>
             <p ref={pRef} className={styles.sectionText}>
                 I would like to advance my career in software engineering. I am particularly interested in creating user-centered applications and working closely with UX designers. I wonder where this will lead me?
             </p>
