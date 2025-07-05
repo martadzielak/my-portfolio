@@ -33,7 +33,7 @@ export default function Section1() {
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
             <h2 className={styles.sectionHeading}>Hi!</h2>
             <p ref={pRef} className={styles.sectionText}>
-                My name is Marta, and I am a software engineer with a passion for creating innovative solutions. Let me show you my proffessional journey and the projects I have worked on.
+                My name is Marta, and I am a software engineer with a passion for creating innovative solutions. Let me show you my professional journey and the projects I have worked on.
             </p>
 
         </div>
