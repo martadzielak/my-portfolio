@@ -47,20 +47,27 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
         });
     }, [cowObj, texturesLoaded, loadedDiffuse, loadedNormal, loadedRoughness]);
     // Animation state
-    const direction = useRef({ x1: 0, y1: 0, x2: 0, y2: 0 });
+    const direction = useRef<{ x1: number; y1: number; x2: number; y2: number; mainAngle: number }>({ x1: 0, y1: 0, x2: 0, y2: 0, mainAngle: 0 });
     const progressRef = useRef(0);
-    const duration = 16; // seconds for one full move
-    // Pick two random points within the visible area (always on screen)
-    // For camera z=3, x/y in [-1.5, 1.5] is always visible
+    const duration = 6; // seconds for one full move (much quicker)
+    // Pick two random points just outside opposite corners for a "tossed ball" effect
     function pickRandomPoints() {
-        const r = 1.3; // stay well within the view
-        const angle1 = Math.random() * Math.PI * 2;
-        const angle2 = angle1 + Math.PI + (Math.random() - 0.5) * Math.PI * 0.7;
+        // For camera z=3, x/y in [-1.5, 1.5] is visible, so use r=2.1 for off-screen
+        // Pick one of four corners for start, and the diagonally opposite for end
+        const corners = [
+            { x: -2.1, y: -2.1 }, // bottom left
+            { x: 2.1, y: -2.1 },  // bottom right
+            { x: 2.1, y: 2.1 },   // top right
+            { x: -2.1, y: 2.1 },  // top left
+        ];
+        const startIdx = Math.floor(Math.random() * 4);
+        const endIdx = (startIdx + 2) % 4; // diagonally opposite
         return {
-            x1: Math.cos(angle1) * r,
-            y1: Math.sin(angle1) * r,
-            x2: Math.cos(angle2) * r,
-            y2: Math.sin(angle2) * r,
+            x1: corners[startIdx].x,
+            y1: corners[startIdx].y,
+            x2: corners[endIdx].x,
+            y2: corners[endIdx].y,
+            mainAngle: Math.atan2(corners[endIdx].y - corners[startIdx].y, corners[endIdx].x - corners[startIdx].x)
         };
     }
     // Initialize direction
@@ -82,9 +89,16 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             }
             // Interpolate position
             const p = Math.min(Math.max(progressRef.current, 0), 1);
-            const smooth = p < 0.15 ? 0 : p > 0.85 ? 1 : (p - 0.15) / 0.7;
-            const x = direction.current.x1 + (direction.current.x2 - direction.current.x1) * smooth;
-            const y = direction.current.y1 + (direction.current.y2 - direction.current.y1) * smooth;
+            // Main path
+            const xMain = direction.current.x1 + (direction.current.x2 - direction.current.x1) * p;
+            const yMain = direction.current.y1 + (direction.current.y2 - direction.current.y1) * p;
+            // Add a little bounce (parabolic arc)
+            const arcHeight = 0.7;
+            const arc = Math.sin(Math.PI * p) * arcHeight;
+            // Perpendicular to main direction
+            const perpAngle = direction.current.mainAngle + Math.PI / 2;
+            const x = xMain + Math.cos(perpAngle) * arc;
+            const y = yMain + Math.sin(perpAngle) * arc;
             group.current.position.x = x;
             group.current.position.y = y;
             // Gentle floating rotation

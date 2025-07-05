@@ -15,7 +15,6 @@ export default function Section1() {
                 start: 'top 40%',
                 end: 'top 60%',
                 scrub: true,
-                markers: true, // Enable markers for debugging
             }
         });
         tl.fromTo(ref.current, { opacity: 0, x: 200, rotate: 10 }, { opacity: 1, x: 0, rotate: 0, duration: 1.1, ease: 'power2.out' }, 0);
