@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ThonkerCanvas from "./ThonkerCanvas";
+import CowCanvas from "./Canvas";
 
 
 const geistSans = Geist({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThonkerCanvas />
+        <CowCanvas />
         {children}
       </body>
     </html>
