@@ -103,11 +103,8 @@
   .page::before {
     left: calc(25% - 5px);
     width: 2px;
-
   }
-
 }
-
 
 .main {
   display: flex;
@@ -175,6 +172,12 @@
     padding: 0px;
     padding-bottom: 15px;
     bottom: -100px;
+  }
+
+  @-moz-document url-prefix() {
+    .footer {
+      bottom: 0;
+    }
   }
 
   .footer h3 {
