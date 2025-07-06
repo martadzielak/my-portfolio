@@ -34,7 +34,7 @@ export default function Section5() {
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
             <h2 className={styles.sectionHeading}>Tylko 2023-2025</h2>
             <p ref={pRef} className={styles.sectionText}>
-                At Tylko I have been a part of a team responsible for the heart of Tylko&apos;s furniture configurator - parametric geometry. We have been working on creating and developing the parametrization concept, so that shelves and chests of drawers can be correct and look great for every configuration. I have also took part in the development of a completely new product - sofas, creating a sofas configurator among the best in the market.
+                At Tylko I have been a part of a team responsible for the heart of Tylko&apos;s furniture configurator - parametric geometry. We have been working on creating and developing the parametrization concept, so that shelves and chests of drawers can be correct and look great for every configuration. I have also taken part in the development of a completely new product - sofas, creating a sofa configurator which is among the best in the market.
             </p>
             <video className={styles.video} autoPlay muted loop>
                 <source src="/Tylko-movie.mp4" type="video/mp4" />
