@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 import styles from './page.module.css';
 
 interface SectionProps {
-    heading: string;
+    heading?: string;
     text: string;
     videoSrc?: string;
 }
@@ -75,7 +75,7 @@ export default function Section({ heading, text, videoSrc }: SectionProps) {
     }, [videoSrc]);
     return (
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
-            <h3 className={styles.sectionHeading}>{heading}</h3>
+            {heading && <h3 className={styles.sectionHeading}>{heading}</h3>}
             <p ref={pRef} className={styles.sectionText}>{text}</p>
             {videoSrc && (
                 <video ref={videoRef} className={styles.video} autoPlay muted loop style={{ opacity: 0 }}>
