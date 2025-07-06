@@ -148,18 +148,42 @@
 }
 
 @media (max-width: 600px) {
+  .subHeading {
+    font-size: 2.5rem;
+    top: 35px;
+    right: 15px;
+  }
+
   .page {
     padding: 32px;
     padding-bottom: 80px;
     background: #f8f8f5;
   }
 
-  .page::after {
+  .page::before {
     width: 32px;
+    left: 0;
   }
 
-  .page::before {
+  .footerMain {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 35px;
+  }
+
+  .footer {
+    padding: 0px;
+    padding-bottom: 15px;
+    bottom: -100px;
+  }
+
+  .footer h3 {
+    margin-top: 15px;
+  }
+
+  .sectionsMain::before {
     left: 27px;
+
   }
 
   .main {
