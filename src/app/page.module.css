@@ -78,7 +78,7 @@
   background: #f8f8f5;
 }
 
-.page::after {
+.page::before {
   content: '';
   position: absolute;
   top: 50vh;
@@ -88,7 +88,7 @@
   border-right: 1px solid black;
 }
 
-.page::before {
+.sectionsMain::before {
   content: '';
   position: fixed;
   top: 50%;
@@ -101,7 +101,9 @@
 
 @-moz-document url-prefix() {
   .page::before {
-    left: calc(25% - 5px)
+    left: calc(25% - 5px);
+    width: 2px;
+
   }
 
 }
