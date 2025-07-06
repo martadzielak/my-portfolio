@@ -102,6 +102,7 @@
 @-moz-document url-prefix() {
   .page::before {
     left: calc(25% - 5px);
+    height: calc(100% - 100vh);
     width: 2px;
   }
 }
