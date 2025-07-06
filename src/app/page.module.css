@@ -175,8 +175,8 @@
   }
 
   @-moz-document url-prefix() {
-    .footer {
-      bottom: 0;
+    .page {
+      padding-bottom: 100px
     }
   }
 
