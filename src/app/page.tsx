@@ -40,11 +40,11 @@ export default function Home() {
           videoSrc="/StepStone-movie2.mp4"
         />
         <Section
-          heading="2019-2020 Sage"
+          heading="Sage 2019-2020"
           text="My previous position was at Sage, where I started by fixing bugs in legacy part of the software. I have been digging into code written in an internal 4GL language, created in the 70s! Later I worked on internal projects such as implementing a way of gathering documentation from different sources and deploying it automatically to a webpage. At last, I have also worked on preparing and conducting load tests!"
         />
         <Section
-          heading="2019 - Praca.pl"
+          heading="Praca.pl 2019"
           text="My first professional experience as a software engineer was at Praca.pl, where I worked on implementing Wordpress webpages with job offers. I have been preparing them independently from the beginning to production! Also, my work included implementing improvements for SEO. Here is an example of a webpage I have created"
           videoSrc="/Pracapl-movie.mp4"
         />
