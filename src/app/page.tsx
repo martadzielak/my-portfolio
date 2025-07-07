@@ -21,7 +21,7 @@ export default function Home() {
         />
         <Section
           heading="Tylko 2023-2025"
-          text={"At Tylko I have been a part of a team responsible for the heart of Tylko's furniture configurator - parametric geometry. We have been working on creating and developing the parametrization concept, so that shelves and chests of drawers can be correct and look great for every configuration. This involves defining the rules and parameters that govern how the furniture is built, ensuring that it meets both functional and aesthetic requirements. The configurator allows users to customize their furniture in a way that is both flexible and precise, resulting in high-quality products that fit perfectly into their spaces. This project involved working in TypeScript and some Vue. You can see the configurator below:"}
+          text={"At Tylko I have been a part of a team responsible for the heart of Tylko's furniture configurator - parametric geometry. We have been working on creating and developing the parametrization concept, so that shelves and chests of drawers can be correct and look great for every configuration. This  involved working in TypeScript and some Vue. You can see the configurator below:"}
           videoSrc="/Tylko-movie.mp4"
         />
         <Section
