@@ -21,7 +21,7 @@ export default function Home() {
         />
         <Section
           heading="Tylko 2023-2025"
-          text={"At Tylko I have been a part of a team responsible for the heart of Tylko's furniture configurator - parametric geometry. We have been working on creating and developing the parametrization concept, so that shelves and chests of drawers can be correct and look great for every configuration. This  involved working in TypeScript and some Vue. You can see the configurator below:"}
+          text={"At Tylko I have been a part of a team responsible for the heart of Tylko's furniture configurator - parametric geometry. We have been working on creating and implementing the parametrization concept, so that shelves and chests of drawers can be correct and look great for every configuration. This involved working in TypeScript and some Vue. You can see Tylko's configurator below:"}
           videoSrc="/Tylko-movie.mp4"
         />
         <Section
@@ -30,7 +30,7 @@ export default function Home() {
         />
         <Section
           heading="StepStone 2020-2022"
-          text="At StepStone I had a chance to learn modern frontend technologies and diligent work organization. First, my team was responsible for implementing a new project - a CV Generator. It was using the latest technologies such as React, TypeScript, and GraphQL. The CV Generator allows users to create professional CVs in a user-friendly way, with various templates and customization options. Here is a video showing how it looks like now (it has been upgraded since!):"
+          text="At StepStone I had a chance to learn modern frontend technologies and diligent work organization. First, my team was responsible for implementing a new project - a CV Generator. It was using technologies such as React, TypeScript, and GraphQL. The CV Generator allows users to create professional CVs in a user-friendly way, with various templates and customization options. Here is a video showing how it looks like now (it has been upgraded since!):"
           videoSrc="/StepStone-movie.mp4"
         />
         <Section
