@@ -25,7 +25,7 @@ export default function Home() {
           videoSrc="/Tylko-movie.mp4"
         />
         <Section
-          text={"I have also taken part in the development of a completely new product - sofas, creating a sofa configurator which is among the best in the market. It allows users many ways to customize their sofas, either globally for the whole sofa or individually for each module. The configurator is designed to be user-friendly and intuitive, allowing customers to easily visualize their choices and see how different options affect the overall look of the sofa. You can see how it works on the video below:"}
+          text={"I have also taken part in the development of the configurator for the completely new product - sofas, creating a configurator which is among the best in the market. It allows users many ways to customize their sofas, either globally for the whole sofa or individually for each module. The configurator is designed to be user-friendly and intuitive, allowing customers to easily visualize their choices and see how different options affect the overall look of the sofa. You can see how it works on the video below:"}
           videoSrc="/Tylko-movie2.mp4"
         />
         <Section
