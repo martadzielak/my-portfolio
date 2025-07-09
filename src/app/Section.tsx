@@ -26,12 +26,6 @@ export default function Section({ heading, text, videoSrc }: SectionProps) {
             }
         });
         tl.fromTo(ref.current, { opacity: 0, x: 200, rotate: 10 }, { opacity: 1, x: 0, rotate: 0, duration: 1.1, ease: 'power2.out' }, 0);
-        tl.fromTo(
-            pRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.7, ease: 'power1.out' },
-            0.2
-        );
         if (videoSrc && videoRef.current) {
             gsap.fromTo(
                 videoRef.current,
