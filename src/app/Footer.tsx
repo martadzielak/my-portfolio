@@ -13,6 +13,8 @@ export default function Footer() {
                     <h3>Links:</h3>
                     <SocialIcon url="https://github.com/martadzielak" style={{ margin: "0 5px" }} />
                     <SocialIcon url="https://www.linkedin.com/in/martadzielak/" style={{ margin: "0 5px" }} />
+                    <SocialIcon url="https://leetcode.com/u/marthvader/" style={{ margin: "0 5px" }} />
+                    <SocialIcon url="https://www.codewars.com/users/darkmartter" style={{ margin: "0 5px" }} />
                 </section>
             </main>
             <p>© 2025 Marta Dziełak</p>

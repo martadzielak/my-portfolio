@@ -9,14 +9,46 @@ interface SectionProps {
     heading?: string;
     text: string;
     videoSrc?: string;
+    animationType?: 'slideRight' | 'slideLeft' | 'fadeIn' | 'rotateIn' | 'scaleIn' | 'skewIn';
 }
 
-export default function Section({ heading, text, videoSrc }: SectionProps) {
+export default function Section({ heading, text, videoSrc, animationType = 'slideRight' }: SectionProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const pRef = useRef<HTMLParagraphElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+
     useEffect(() => {
-        if (!ref.current || !pRef.current || (videoSrc && !videoRef.current)) return;
+        if (!ref.current) return;
+
+        // Animation variants
+        let fromVars: gsap.TweenVars = { opacity: 0 };
+        let toVars: gsap.TweenVars = { opacity: 1, duration: 1.1, ease: 'power2.out' };
+        switch (animationType) {
+            case 'slideLeft':
+                fromVars = { ...fromVars, x: -200 };
+                toVars = { ...toVars, x: 0 };
+                break;
+            case 'fadeIn':
+                // Only opacity
+                break;
+            case 'rotateIn':
+                fromVars = { ...fromVars, rotate: 30, x: 100 };
+                toVars = { ...toVars, rotate: 0, x: 0 };
+                break;
+            case 'scaleIn':
+                fromVars = { ...fromVars, scale: 0.7 };
+                toVars = { ...toVars, scale: 1 };
+                break;
+            case 'skewIn':
+                fromVars = { ...fromVars, skewX: 30, x: 100 };
+                toVars = { ...toVars, skewX: 0, x: 0 };
+                break;
+            case 'slideRight':
+            default:
+                fromVars = { ...fromVars, x: 200, rotate: 10 };
+                toVars = { ...toVars, x: 0, rotate: 0 };
+                break;
+        }
+
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: ref.current,
@@ -25,14 +57,15 @@ export default function Section({ heading, text, videoSrc }: SectionProps) {
                 scrub: true,
             }
         });
-        tl.fromTo(ref.current, { opacity: 0, x: 200, rotate: 10 }, { opacity: 1, x: 0, rotate: 0, duration: 1.1, ease: 'power2.out' }, 0);
+
+        tl.fromTo(ref.current, fromVars, toVars, 0);
+
         if (videoSrc && videoRef.current) {
             gsap.fromTo(
                 videoRef.current,
-                { opacity: 0, rotate: -20, x: 100 },
+                { opacity: 0, x: 200 },
                 {
                     opacity: 1,
-                    rotate: 0,
                     x: 0,
                     scrollTrigger: {
                         trigger: ref.current,
@@ -48,8 +81,7 @@ export default function Section({ heading, text, videoSrc }: SectionProps) {
                 videoRef.current,
                 {
                     opacity: 0,
-                    rotate: 20,
-                    x: -100,
+                    x: 200,
                     scrollTrigger: {
                         trigger: ref.current,
                         start: 'bottom 60%',
@@ -61,16 +93,18 @@ export default function Section({ heading, text, videoSrc }: SectionProps) {
                 }
             );
         }
+
         return () => {
-            if (tl.scrollTrigger) tl.scrollTrigger.kill();
+            tl.scrollTrigger?.kill();
             tl.kill();
             ScrollTrigger.getAll().forEach(t => t.kill());
         };
-    }, [videoSrc]);
+    }, [videoSrc, animationType]);
+
     return (
         <div ref={ref} className={styles.section} style={{ opacity: 0 }}>
             {heading && <h3 className={styles.sectionHeading}>{heading}</h3>}
-            <p ref={pRef} className={styles.sectionText}>{text}</p>
+            <p className={styles.sectionText}>{text}</p>
             {videoSrc && (
                 <video ref={videoRef} className={styles.video} autoPlay muted loop style={{ opacity: 0 }}>
                     <source src={videoSrc} type="video/mp4" />

@@ -1,14 +1,8 @@
 .mainHeading {
-  position: fixed;
-  top: 15px;
-  left: 15px;
   font-size: 1.5rem;
 }
 
 .subHeading {
-  position: fixed;
-  top: 0;
-  right: 15px;
   font-size: 8rem;
   color: white;
   text-shadow:
@@ -146,9 +140,8 @@
 }
 
 @media (max-width: 600px) {
-
   .section {
-    min-height: auto;
+    padding: 15px 0;
   }
 
   .subHeading {
@@ -216,7 +209,7 @@
   }
 
   .video {
-    margin-left: -35px;
-    width: calc(100vw - 70px);
+    margin-left: 0;
+    width: calc(100vw - 105px);
   }
 }
