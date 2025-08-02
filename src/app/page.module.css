@@ -23,17 +23,28 @@
 }
 
 .section {
+  margin: 50px 0;
   position: relative;
   background: transparent;
-  min-height: 100vh;
   max-width: 800px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   padding: 0 2rem;
   box-sizing: border-box;
+}
+
+.section:first-child {
+  margin-top: 20vh;
+  padding-top: 0;
+  margin-bottom: 100px;
+}
+
+.section:last-child {
+  margin-bottom: 20vh;
+  padding-bottom: 0;
+  margin-top: 100px;
 }
 
 .sectionHeading {
