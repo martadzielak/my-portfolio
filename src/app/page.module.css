@@ -42,7 +42,7 @@
 }
 
 .section:last-child {
-  margin-bottom: 20vh;
+  margin-bottom: calc(20vh + 150px);
   padding-bottom: 0;
   margin-top: 100px;
 }
@@ -148,6 +148,22 @@
 .footer h3 {
   font-size: 1.2rem;
   margin-bottom: 15px;
+}
+
+.letter {
+  display: inline-block;
+  transition: color 0.2s, transform 0.2s;
+  will-change: color, transform;
+}
+
+.paragraphLetter {
+  display: inline-block;
+  transition: color 0.2s, transform 0.2s;
+  will-change: color, transform;
+}
+
+.p {
+  white-space: nowrap;
 }
 
 @media (max-width: 600px) {
