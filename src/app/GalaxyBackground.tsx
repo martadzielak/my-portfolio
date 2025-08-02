@@ -25,6 +25,7 @@ export default function GalaxyBackground() {
         function resize() {
             width = window.innerWidth;
             height = window.innerHeight;
+            if (!canvas) return;
             canvas.width = width;
             canvas.height = height;
         }
@@ -51,6 +52,7 @@ export default function GalaxyBackground() {
         });
 
         function draw() {
+            if (!ctx) return;
             ctx.clearRect(0, 0, width, height);
             const now = performance.now();
             for (const star of stars) {

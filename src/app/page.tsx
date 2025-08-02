@@ -59,7 +59,7 @@ export default function Home() {
           <Section
             heading="What is next?"
             text="I would like to advance my career in software engineering. I am particularly interested in creating user-centered applications and working closely with UX designers. I wonder where this will lead me?"
-            animationType="fadeIn"
+            headingAnimationType="fade"
 
           />
         </main>

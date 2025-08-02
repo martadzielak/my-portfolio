@@ -40,7 +40,7 @@ export function useHeadingAnimation(containerRef: React.RefObject<HTMLElement>, 
     useEffect(() => {
         if (!containerRef.current || !triggerRef.current) return;
         const letters = containerRef.current.querySelectorAll('span');
-        let tl = gsap.timeline({
+        const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: triggerRef.current,
                 start: 'top 80%',
@@ -110,7 +110,7 @@ export function useParagraphColorAnimation(containerRef: React.RefObject<HTMLEle
     useEffect(() => {
         if (!containerRef.current || !triggerRef.current) return;
         const words = containerRef.current.querySelectorAll('span');
-        let tl = gsap.timeline({
+        const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: triggerRef.current,
                 start: 'top 85%',

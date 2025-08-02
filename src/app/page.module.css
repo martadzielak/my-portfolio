@@ -81,7 +81,7 @@
   flex-direction: column;
   min-height: 100svh;
   padding: 0 25%;
-  /* background: #f8f8f5; */
+  background: #111;
 }
 
 .page::before {
