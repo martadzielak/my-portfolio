@@ -33,7 +33,7 @@ export default function Section({ heading, text, videoSrc, headingAnimationType 
             )}
             <p ref={paragraphRef as React.RefObject<HTMLParagraphElement>} className={styles.sectionText}>{splitText}</p>
             {videoSrc && (
-                <video ref={videoRef} className={styles.video} autoPlay muted loop>
+                <video ref={videoRef} className={styles.video} autoPlay playsInline muted loop>
                     <source src={videoSrc} type="video/mp4" />
                 </video>
             )}
