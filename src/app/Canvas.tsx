@@ -156,12 +156,49 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
         }
     };
 
+    // Helper to update floating path start after interaction
+    function setFloatingStartFromCurrent() {
+        if (group.current) {
+            // Set the current position as the new start
+            direction.current.x1 = group.current.position.x;
+            direction.current.y1 = group.current.position.y;
+            // Pick a new random end point (diagonally opposite)
+            const corners = [
+                { x: -2.1, y: -2.1 },
+                { x: 2.1, y: -2.1 },
+                { x: 2.1, y: 2.1 },
+                { x: -2.1, y: 2.1 },
+            ];
+            // Find the closest corner to current position
+            let minDist = Infinity;
+            let startIdx = 0;
+            for (let i = 0; i < 4; i++) {
+                const dx = group.current.position.x - corners[i].x;
+                const dy = group.current.position.y - corners[i].y;
+                const dist = dx * dx + dy * dy;
+                if (dist < minDist) {
+                    minDist = dist;
+                    startIdx = i;
+                }
+            }
+            const endIdx = (startIdx + 2) % 4;
+            direction.current.x2 = corners[endIdx].x;
+            direction.current.y2 = corners[endIdx].y;
+            direction.current.mainAngle = Math.atan2(
+                direction.current.y2 - direction.current.y1,
+                direction.current.x2 - direction.current.x1
+            );
+            progressRef.current = 0;
+        }
+    }
+
     // Global pointer up for desktop to stop orbiting only when mouse is released
     function handleGlobalPointerUp() {
         orbiting.current = false;
         orbitingActive.current = false;
         lastPointer.current = null;
         setTargetScale(0.8); // Restore to normal size
+        setFloatingStartFromCurrent(); // Continue floating from here
         window.removeEventListener('mouseup', handleGlobalPointerUp);
     }
 
@@ -172,6 +209,7 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             orbitingActive.current = false;
             lastPointer.current = null;
             setTargetScale(0.8); // Restore to normal size
+            setFloatingStartFromCurrent(); // Continue floating from here
         }
         // For desktop, orbiting is stopped by global mouseup
     };
