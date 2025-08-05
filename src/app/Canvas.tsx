@@ -148,12 +148,35 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             orbitingActive.current = true;
         } else {
             // Desktop: always orbit on mousedown
+            lastPointer.current = { x: e.clientX, y: e.clientY };
             orbiting.current = true;
             orbitingActive.current = true;
-            lastPointer.current = { x: e.clientX, y: e.clientY };
+            // Add global mouseup listener to ensure orbiting stops only when mouse is released
+            window.addEventListener('mouseup', handleGlobalPointerUp);
         }
     };
-    // Pointer move: handle orbit (desktop/touch) or drag (if you want to re-enable drag)
+
+    // Global pointer up for desktop to stop orbiting only when mouse is released
+    function handleGlobalPointerUp() {
+        orbiting.current = false;
+        orbitingActive.current = false;
+        lastPointer.current = null;
+        setTargetScale(0.8); // Restore to normal size
+        window.removeEventListener('mouseup', handleGlobalPointerUp);
+    }
+
+    // Pointer up: stop orbit and restore floating/scale (for touch)
+    const handleCowPointerUp = (e?: ThreeEvent<PointerEvent>) => {
+        if (e && e.pointerType === 'touch') {
+            orbiting.current = false;
+            orbitingActive.current = false;
+            lastPointer.current = null;
+            setTargetScale(0.8); // Restore to normal size
+        }
+        // For desktop, orbiting is stopped by global mouseup
+    };
+
+    // Pointer move: handle orbit (desktop/touch)
     const handleCowPointerMove = (e: ThreeEvent<PointerEvent>) => {
         if (orbiting.current && group.current && lastPointer.current) {
             const dx = e.clientX - lastPointer.current.x;
@@ -166,13 +189,6 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             };
             lastPointer.current = { x: e.clientX, y: e.clientY };
         }
-    };
-    // Pointer up: stop orbit and restore floating/scale
-    const handleCowPointerUp = () => {
-        orbiting.current = false;
-        orbitingActive.current = false;
-        lastPointer.current = null;
-        setTargetScale(0.8); // Restore to normal size
     };
 
     return cowObj ? (
