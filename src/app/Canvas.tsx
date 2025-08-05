@@ -151,11 +151,45 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     // Add a transparent clickable mesh for interaction
     const handleCowPointerDown = (e: PointerEvent) => {
         e.stopPropagation();
-        dragging.current = true;
-        const pos = getPointerPos(e);
-        if (pos && group.current) {
-            dragOffset.current.x = group.current.position.x - pos.x;
-            dragOffset.current.y = group.current.position.y - pos.y;
+        // Orbit on left mouse button or single touch
+        if (e.pointerType === 'mouse' && e.button === 0) {
+            orbiting.current = true;
+            lastPointer.current = { x: e.clientX, y: e.clientY };
+        } else if (e.pointerType === 'touch') {
+            // For touch, treat any touch as orbit
+            orbiting.current = true;
+            lastPointer.current = { x: e.clientX, y: e.clientY };
+        } else {
+            // fallback to drag
+            dragging.current = true;
+            const pos = getPointerPos(e);
+            if (pos && group.current) {
+                dragOffset.current.x = group.current.position.x - pos.x;
+                dragOffset.current.y = group.current.position.y - pos.y;
+            }
+        }
+    };
+    const handleCowPointerMove = (e: PointerEvent) => {
+        if (orbiting.current && group.current && lastPointer.current) {
+            e.stopPropagation();
+            const dx = e.clientX - lastPointer.current.x;
+            const dy = e.clientY - lastPointer.current.y;
+            group.current.rotation.y += dx * 0.01;
+            group.current.rotation.x += dy * 0.01;
+            manualRotation.current = {
+                x: group.current.rotation.x,
+                y: group.current.rotation.y,
+            };
+            lastPointer.current = { x: e.clientX, y: e.clientY };
+            return;
+        }
+        if (dragging.current && group.current) {
+            e.stopPropagation();
+            const pos = getPointerPos(e);
+            if (pos) {
+                group.current.position.x = pos.x + dragOffset.current.x;
+                group.current.position.y = pos.y + dragOffset.current.y;
+            }
         }
     };
     const handleCowPointerUp = (e: PointerEvent) => {
@@ -163,16 +197,6 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
         dragging.current = false;
         orbiting.current = false;
         lastPointer.current = null;
-    };
-    const handleCowPointerMove = (e: PointerEvent) => {
-        if (!dragging.current && !orbiting.current) return;
-        e.stopPropagation();
-        const pos = getPointerPos(e);
-        if (dragging.current && pos && group.current) {
-            group.current.position.x = pos.x + dragOffset.current.x;
-            group.current.position.y = pos.y + dragOffset.current.y;
-        }
-        // Orbit logic can be added here if needed
     };
     return cowObj ? (
         <group ref={group}>
