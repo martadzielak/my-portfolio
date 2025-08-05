@@ -209,13 +209,13 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             {/* Transparent mesh for easier interaction */}
             <mesh
                 position={[0, 0, 0]}
-                scale={[1.2, 1.2, 1.2]}
+                scale={[1.26, 1.26, 1.26]} // 5% bigger than previous 1.2
                 onPointerDown={handleCowPointerDown}
                 onPointerUp={handleCowPointerUp}
                 onPointerMove={handleCowPointerMove}
                 onPointerLeave={handleCowPointerUp}
             >
-                <boxGeometry args={[1.5, 1.2, 0.8]} />
+                <boxGeometry args={[1.575, 1.26, 0.84]} />
                 <meshBasicMaterial transparent opacity={0} />
             </mesh>
         </group>
