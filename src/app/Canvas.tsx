@@ -131,6 +131,11 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
                     const dy = pos.clientY - lastPointer.current.y;
                     group.current.rotation.y += dx * 0.01;
                     group.current.rotation.x += dy * 0.01;
+                    // Save manual rotation
+                    manualRotation.current = {
+                        x: group.current.rotation.x,
+                        y: group.current.rotation.y,
+                    };
                     lastPointer.current = { x: pos.clientX, y: pos.clientY };
                 }
                 return;
@@ -146,6 +151,7 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             dragging.current = false;
             orbiting.current = false;
             lastPointer.current = null;
+            // manualRotation is already set in onPointerMove
         }
         // Mouse events
         window.addEventListener('mousedown', onPointerDown);
@@ -184,6 +190,9 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             window.removeEventListener('touchcancel', onAnyPointerUp);
         };
     }, []);
+    // Store manual rotation so it persists after orbiting
+    const manualRotation = useRef<{ x: number; y: number } | null>(null);
+
     useFrame((state, delta) => {
         if (group.current) {
             if (!dragging.current && !orbiting.current && !pointerDown.current) {
@@ -216,8 +225,13 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             }
             // Gentle floating rotation (unless orbiting)
             if (!orbiting.current) {
-                group.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.3;
-                group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1;
+                if (manualRotation.current) {
+                    group.current.rotation.x = manualRotation.current.x;
+                    group.current.rotation.y = manualRotation.current.y;
+                } else {
+                    group.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.3;
+                    group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1;
+                }
             }
             // Set cow scale to 0.8 (20% smaller)
             group.current.scale.set(0.8, 0.8, 0.8);
