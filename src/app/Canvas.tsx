@@ -4,6 +4,7 @@ import { JSX, Suspense, useEffect, useRef, useState } from 'react';
 import { TextureLoader } from 'three';
 import * as THREE from 'three';
 import { OBJLoader } from 'three-stdlib';
+import { ThreeEvent } from '@react-three/fiber';
 
 function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) {
     const group = useRef<THREE.Group>(null);
@@ -46,10 +47,7 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             }
         });
     }, [cowObj, texturesLoaded, loadedDiffuse, loadedNormal, loadedRoughness]);
-    // Drag state
-    const dragging = useRef(false);
-    const draggingActive = useRef(false);
-    const dragOffset = useRef({ x: 0, y: 0 });
+    // Orbiting state
     const orbiting = useRef(false);
     const orbitingActive = useRef(false);
     const lastPointer = useRef<{ x: number; y: number } | null>(null);
@@ -57,6 +55,8 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     const direction = useRef<{ x1: number; y1: number; x2: number; y2: number; mainAngle: number }>({ x1: 0, y1: 0, x2: 0, y2: 0, mainAngle: 0 });
     const progressRef = useRef(0);
     const duration = 6; // seconds for one full move (much quicker)
+    // Add state for scale animation
+    const [targetScale, setTargetScale] = useState(0.8);
     // Pick two random points just outside opposite corners for a "tossed ball" effect
     function pickRandomPoints() {
         // For camera z=3, x/y in [-1.5, 1.5] is visible, so use r=2.1 for off-screen
@@ -82,7 +82,7 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
         direction.current = pickRandomPoints();
         progressRef.current = 0;
     }, []);
-    // Drag and orbit handlers
+    // Orbit handlers
     // Removed: Global drag/orbit handlers
     // Only keep the handleCowPointerDown, handleCowPointerMove, handleCowPointerUp handlers on the cow mesh and transparent box
     // Store manual rotation so it persists after orbiting
@@ -90,8 +90,7 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
 
     useFrame((state, delta) => {
         if (group.current) {
-            if (!dragging.current && !orbiting.current) {
-                // Removed: Make cow follow cursor more closely
+            if (!orbiting.current) {
                 progressRef.current += delta / duration;
                 if (progressRef.current >= 1) {
                     // Pick new random direction
@@ -128,64 +127,34 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
                     group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1;
                 }
             }
-            // Set cow scale to 0.8 (20% smaller)
-            group.current.scale.set(0.8, 0.8, 0.8);
+            // Animate scale smoothly toward targetScale
+            const current = group.current.scale.x;
+            group.current.scale.setScalar(current + (targetScale - current) * 0.15);
         }
     });
-    // Helper to get pointer position in 3D world (for pointer events)
-    function getPointerPos(e: PointerEvent | MouseEvent | TouchEvent) {
-        let clientX, clientY;
-        if ('touches' in e && e.touches.length > 0) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        } else if ('clientX' in e) {
-            clientX = e.clientX;
-            clientY = e.clientY;
-        } else {
-            return null;
-        }
-        // Map screen to world coordinates (approximate)
-        const x = ((clientX / window.innerWidth) * 2 - 1) * 1.5;
-        const y = -((clientY / window.innerHeight) * 2 - 1) * 1.5;
-        return { x, y, clientX, clientY };
-    }
+    // --- Mobile orbiting handlers (merged with pointer events) ---
+    // Store last pointer/touch position for drag/orbit
+    // const lastPointer = useRef<{ x: number; y: number } | null>(null); // <-- REMOVE THIS LINE
 
-    // Add a transparent clickable mesh for interaction
-    const handleCowPointerDown = (e: PointerEvent) => {
-        e.stopPropagation();
-        // Stop floating on pointer down
-        dragging.current = false;
-        orbiting.current = false;
-        if (e.pointerType === 'mouse' && e.button === 0 && e.shiftKey) {
-            // Orbit: Shift+mousedown
+    // Pointer down: begin orbiting on desktop (always), or one-finger touch (mobile)
+    const handleCowPointerDown = (e: ThreeEvent<PointerEvent>) => {
+        // Stop floating immediately
+        progressRef.current = 0;
+        setTargetScale(0.8 * 1.05); // 5% bigger
+        if (e.pointerType === 'touch') {
+            // Touch: always orbit on one finger
+            lastPointer.current = { x: e.clientX, y: e.clientY };
+            orbiting.current = true;
+            orbitingActive.current = true;
+        } else {
+            // Desktop: always orbit on mousedown
             orbiting.current = true;
             orbitingActive.current = true;
             lastPointer.current = { x: e.clientX, y: e.clientY };
-            window.addEventListener('mousemove', handleGlobalOrbitMove);
-            window.addEventListener('mouseup', handleGlobalOrbitUp);
-        } else if (e.pointerType === 'mouse' && e.button === 0) {
-            // Drag: plain mousedown
-            dragging.current = true;
-            draggingActive.current = true;
-            const pos = getPointerPos(e);
-            if (pos && group.current) {
-                dragOffset.current.x = group.current.position.x - pos.x;
-                dragOffset.current.y = group.current.position.y - pos.y;
-            }
-            window.addEventListener('mousemove', handleGlobalDragMove);
-            window.addEventListener('mouseup', handleGlobalDragUp);
-        } else if (e.pointerType === 'touch') {
-            // Touch: fallback to local drag
-            dragging.current = true;
-            const pos = getPointerPos(e);
-            if (pos && group.current) {
-                dragOffset.current.x = group.current.position.x - pos.x;
-                dragOffset.current.y = group.current.position.y - pos.y;
-            }
         }
     };
-    // Global orbit move handler
-    function handleGlobalOrbitMove(e: MouseEvent) {
+    // Pointer move: handle orbit (desktop/touch) or drag (if you want to re-enable drag)
+    const handleCowPointerMove = (e: ThreeEvent<PointerEvent>) => {
         if (orbiting.current && group.current && lastPointer.current) {
             const dx = e.clientX - lastPointer.current.x;
             const dy = e.clientY - lastPointer.current.y;
@@ -197,50 +166,15 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             };
             lastPointer.current = { x: e.clientX, y: e.clientY };
         }
-    }
-    // Global orbit up handler
-    function handleGlobalOrbitUp() {
-        if (orbiting.current) {
-            orbiting.current = false;
-            orbitingActive.current = false;
-            lastPointer.current = null;
-            window.removeEventListener('mousemove', handleGlobalOrbitMove);
-            window.removeEventListener('mouseup', handleGlobalOrbitUp);
-        }
-    }
-    // Global drag move handler
-    function handleGlobalDragMove(e: MouseEvent) {
-        if (dragging.current && group.current) {
-            const pos = getPointerPos(e);
-            if (pos) {
-                group.current.position.x = pos.x + dragOffset.current.x;
-                group.current.position.y = pos.y + dragOffset.current.y;
-            }
-        }
-    }
-    // Global drag up handler
-    function handleGlobalDragUp() {
-        if (dragging.current) {
-            dragging.current = false;
-            draggingActive.current = false;
-            window.removeEventListener('mousemove', handleGlobalDragMove);
-            window.removeEventListener('mouseup', handleGlobalDragUp);
-        }
-    }
-    const handleCowPointerUp = (e: PointerEvent) => {
-        e.stopPropagation();
-        // Only end orbit/drag if not using global mouseup
-        if (!orbitingActive.current) {
-            orbiting.current = false;
-        }
-        if (!draggingActive.current) {
-            dragging.current = false;
-        }
-        lastPointer.current = null;
     };
-    // No-op: all drag/orbit handled globally for mouse
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleCowPointerMove = (_: PointerEvent) => { };
+    // Pointer up: stop orbit and restore floating/scale
+    const handleCowPointerUp = () => {
+        orbiting.current = false;
+        orbitingActive.current = false;
+        lastPointer.current = null;
+        setTargetScale(0.8); // Restore to normal size
+    };
+
     return cowObj ? (
         <group ref={group}>
             <primitive {...props} object={cowObj}
