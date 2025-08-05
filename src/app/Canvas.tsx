@@ -151,16 +151,28 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     // Add a transparent clickable mesh for interaction
     const handleCowPointerDown = (e: PointerEvent) => {
         e.stopPropagation();
-        // Orbit on left mouse button or single touch
+        // Stop floating on any pointer down
+        dragging.current = false;
+        orbiting.current = false;
+        // Orbit on left mouse button (desktop) or three-finger touch (mobile)
         if (e.pointerType === 'mouse' && e.button === 0) {
             orbiting.current = true;
             lastPointer.current = { x: e.clientX, y: e.clientY };
         } else if (e.pointerType === 'touch') {
-            // For touch, treat any touch as orbit
-            orbiting.current = true;
-            lastPointer.current = { x: e.clientX, y: e.clientY };
+            // Try to get touches from nativeEvent if present
+            const touches = (e as unknown as { touches?: TouchList }).touches;
+            if (touches && touches.length === 3) {
+                orbiting.current = true;
+                lastPointer.current = { x: e.clientX, y: e.clientY };
+            } else {
+                dragging.current = true;
+                const pos = getPointerPos(e);
+                if (pos && group.current) {
+                    dragOffset.current.x = group.current.position.x - pos.x;
+                    dragOffset.current.y = group.current.position.y - pos.y;
+                }
+            }
         } else {
-            // fallback to drag
             dragging.current = true;
             const pos = getPointerPos(e);
             if (pos && group.current) {
