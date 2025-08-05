@@ -101,20 +101,26 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             return { x, y, clientX, clientY };
         }
         function onPointerDown(e: MouseEvent | TouchEvent) {
-            e.preventDefault();
-            // Orbit mode: 3-finger touch or any mousedown
+            // Only preventDefault if actually dragging or orbiting
             let isOrbit = false;
+            let isDrag = false;
             if ('touches' in e && e.touches.length === 3) {
                 isOrbit = true;
             } else if (e instanceof MouseEvent && e.button === 0) {
-                // Left mouse button (any mousedown)
                 isOrbit = true;
+            } else if ('touches' in e && e.touches.length === 1) {
+                isDrag = true;
+            } else if (e instanceof MouseEvent && e.button === 2) {
+                isDrag = true;
+            }
+            if (isOrbit || isDrag) {
+                e.preventDefault();
             }
             if (isOrbit) {
                 orbiting.current = true;
                 const pos = getPointerPos(e);
                 if (pos) lastPointer.current = { x: pos.clientX, y: pos.clientY };
-            } else {
+            } else if (isDrag) {
                 dragging.current = true;
                 const pos = getPointerPos(e);
                 if (pos && group.current) {
