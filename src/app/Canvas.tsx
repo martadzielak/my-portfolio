@@ -48,8 +48,10 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     }, [cowObj, texturesLoaded, loadedDiffuse, loadedNormal, loadedRoughness]);
     // Drag state
     const dragging = useRef(false);
+    const draggingActive = useRef(false);
     const dragOffset = useRef({ x: 0, y: 0 });
     const orbiting = useRef(false);
+    const orbitingActive = useRef(false);
     const lastPointer = useRef<{ x: number; y: number } | null>(null);
     // Animation state
     const direction = useRef<{ x1: number; y1: number; x2: number; y2: number; mainAngle: number }>({ x1: 0, y1: 0, x2: 0, y2: 0, mainAngle: 0 });
@@ -151,28 +153,29 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
     // Add a transparent clickable mesh for interaction
     const handleCowPointerDown = (e: PointerEvent) => {
         e.stopPropagation();
-        // Stop floating on any pointer down
+        // Stop floating on pointer down
         dragging.current = false;
         orbiting.current = false;
-        // Orbit on left mouse button (desktop) or three-finger touch (mobile)
-        if (e.pointerType === 'mouse' && e.button === 0) {
+        if (e.pointerType === 'mouse' && e.button === 0 && e.shiftKey) {
+            // Orbit: Shift+mousedown
             orbiting.current = true;
+            orbitingActive.current = true;
             lastPointer.current = { x: e.clientX, y: e.clientY };
-        } else if (e.pointerType === 'touch') {
-            // Try to get touches from nativeEvent if present
-            const touches = (e as unknown as { touches?: TouchList }).touches;
-            if (touches && touches.length === 3) {
-                orbiting.current = true;
-                lastPointer.current = { x: e.clientX, y: e.clientY };
-            } else {
-                dragging.current = true;
-                const pos = getPointerPos(e);
-                if (pos && group.current) {
-                    dragOffset.current.x = group.current.position.x - pos.x;
-                    dragOffset.current.y = group.current.position.y - pos.y;
-                }
+            window.addEventListener('mousemove', handleGlobalOrbitMove);
+            window.addEventListener('mouseup', handleGlobalOrbitUp);
+        } else if (e.pointerType === 'mouse' && e.button === 0) {
+            // Drag: plain mousedown
+            dragging.current = true;
+            draggingActive.current = true;
+            const pos = getPointerPos(e);
+            if (pos && group.current) {
+                dragOffset.current.x = group.current.position.x - pos.x;
+                dragOffset.current.y = group.current.position.y - pos.y;
             }
-        } else {
+            window.addEventListener('mousemove', handleGlobalDragMove);
+            window.addEventListener('mouseup', handleGlobalDragUp);
+        } else if (e.pointerType === 'touch') {
+            // Touch: fallback to local drag
             dragging.current = true;
             const pos = getPointerPos(e);
             if (pos && group.current) {
@@ -181,9 +184,9 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             }
         }
     };
-    const handleCowPointerMove = (e: PointerEvent) => {
+    // Global orbit move handler
+    function handleGlobalOrbitMove(e: MouseEvent) {
         if (orbiting.current && group.current && lastPointer.current) {
-            e.stopPropagation();
             const dx = e.clientX - lastPointer.current.x;
             const dy = e.clientY - lastPointer.current.y;
             group.current.rotation.y += dx * 0.01;
@@ -193,23 +196,51 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
                 y: group.current.rotation.y,
             };
             lastPointer.current = { x: e.clientX, y: e.clientY };
-            return;
         }
+    }
+    // Global orbit up handler
+    function handleGlobalOrbitUp() {
+        if (orbiting.current) {
+            orbiting.current = false;
+            orbitingActive.current = false;
+            lastPointer.current = null;
+            window.removeEventListener('mousemove', handleGlobalOrbitMove);
+            window.removeEventListener('mouseup', handleGlobalOrbitUp);
+        }
+    }
+    // Global drag move handler
+    function handleGlobalDragMove(e: MouseEvent) {
         if (dragging.current && group.current) {
-            e.stopPropagation();
             const pos = getPointerPos(e);
             if (pos) {
                 group.current.position.x = pos.x + dragOffset.current.x;
                 group.current.position.y = pos.y + dragOffset.current.y;
             }
         }
-    };
+    }
+    // Global drag up handler
+    function handleGlobalDragUp() {
+        if (dragging.current) {
+            dragging.current = false;
+            draggingActive.current = false;
+            window.removeEventListener('mousemove', handleGlobalDragMove);
+            window.removeEventListener('mouseup', handleGlobalDragUp);
+        }
+    }
     const handleCowPointerUp = (e: PointerEvent) => {
         e.stopPropagation();
-        dragging.current = false;
-        orbiting.current = false;
+        // Only end orbit/drag if not using global mouseup
+        if (!orbitingActive.current) {
+            orbiting.current = false;
+        }
+        if (!draggingActive.current) {
+            dragging.current = false;
+        }
         lastPointer.current = null;
     };
+    // No-op: all drag/orbit handled globally for mouse
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleCowPointerMove = (_: PointerEvent) => { };
     return cowObj ? (
         <group ref={group}>
             <primitive {...props} object={cowObj}
@@ -221,13 +252,13 @@ function FloatingCow(props: Omit<JSX.IntrinsicElements["primitive"], "object">) 
             {/* Transparent mesh for easier interaction */}
             <mesh
                 position={[0, 0, 0]}
-                scale={[1.26, 1.26, 1.26]} // 5% bigger than previous 1.2
+                scale={[1.2, 1.2, 1.2]}
                 onPointerDown={handleCowPointerDown}
                 onPointerUp={handleCowPointerUp}
                 onPointerMove={handleCowPointerMove}
                 onPointerLeave={handleCowPointerUp}
             >
-                <boxGeometry args={[1.575, 1.26, 0.84]} />
+                <boxGeometry args={[1.5, 1.2, 0.8]} />
                 <meshBasicMaterial transparent opacity={0} />
             </mesh>
         </group>
